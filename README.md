@@ -60,7 +60,7 @@ dependencies:
 ```
 
 
-#### 2. Student and Teacher Dashboard
+#### 2. Student and Teacher Dashboard(Frontend and Backend)
 The frontend of a student and teacher dashboard can be very easily made via Flutter with its easy-to-use widgets and its engaging customizable animations.
 When it comes to the backend, we will be requiring various libararies and frameworks. 
 
@@ -105,6 +105,200 @@ class SearchService{
   }
 }
 ```
+
+**2. Jitsi as a Service(JaaS)**(For an inbuilt video conferencing system)
+Jitsi as a Service enables you to develop and integrate Jitsi Meetings functionailty into our applications. So we can host meetings that leverage the distributed Meetings infrastructure from datacenters around the world. 
+To use Jitsi Meet in our Flutter apps, we need to use the **jitsi_meet** package. [Package reference](https://pub.dev/packages/jitsi_meet#:~:text=Jitsi%20Meet%20Plugin%20for%20Flutter,secure%20and%20scalable%20video%20conferences.%22). To install it, we can run this command:
+```
+$ flutter pub add jitsi_meet
+```
+or we can implicitly add it to our dependencies in our `pubspec.yaml` file
+
+```
+dependencies:
+   jitsi_meet: ^4.0.0
+```
+and run `flutter pub get`.
+
+After this we need to configure it for our Android and our iOs codebase. This plugin has various features that we can use for our conferences. 
+
+##### To join a meeting
+We have to provide a function that will look like this:
+
+```
+_joinMeeting() async {
+    try {
+	  FeatureFlag featureFlag = FeatureFlag();
+	  featureFlag.welcomePageEnabled = false;
+	  featureFlag.resolution = FeatureFlagVideoResolution.MD_RESOLUTION; // Limit video resolution to 360p
+	  
+      var options = JitsiMeetingOptions()
+        ..room = "myroom" // Required, spaces will be trimmed
+        ..serverURL = "https://someHost.com"
+        ..subject = "Meeting with Gunschu"
+        ..userDisplayName = "My Name"
+        ..userEmail = "myemail@email.com"
+        ..userAvatarURL = "https://someimageurl.com/image.jpg" // or .png
+        ..audioOnly = true
+        ..audioMuted = true
+        ..videoMuted = true
+        ..featureFlag = featureFlag;
+
+      await JitsiMeet.joinMeeting(options);
+    } catch (error) {
+      debugPrint("error: $error");
+    }
+  }
+```
+Adding this will get us started to enable video conferencing feature in our Flutter apps.
+
+
+**3.WBO**(For adding whiteboard functionality while having a video conference)
+[Link to github repo](https://github.com/lovasoa/whitebophir)
+This is a java script code that can be integrated in our flutter apps along with the **jitsi_meet** plugin. It is an online collaborative whiteboard that allows many users to draw simultaneously on a large virtual board.
+
+
+**4. Google APIs**(For assignment reviews and submissions)
+Google provides a list of APIs which can be used in our apps to integrate its services for better user flow and control. To provide assignments to the students, we can use the **Google Classroom API** which has three types of Classwork: Assignments, Questions and Materials. 
+To access this, we can use the CourseWork resource, which has various fileds such as `courseId`, `title`, `description`, `maxPoints`, `assignment` and so on. [CourseWork resource](https://developers.google.com/classroom/reference/rest/v1/courses.courseWork).
+
+For using it with out flutter apps, we also have an option to use the `googleapis` package which auto generates Dart libraries for accessing Google APIs. [Link to the package](https://pub.dev/packages/googleapis).
+
+
+**5. Razorpay plugins**(For fee payment systems)
+Razorpay is a payment gateway which is used by E-Commerce companies or websites to charge the customer for their product and services and they can collect online payment via netbanking, wallets, debit or credit cards and UPI. 
+To use razorpay feature in our Flutter app, we can use the **rasorpay_flutter** plugin. To install it run command:
+```
+ $ flutter pub add razorpay_flutter
+```
+or add a line to the package's pubspec.yaml file:
+```
+dependencies:
+  razorpay_flutter: ^1.2.5
+```
+and run `flutter pub get`.
+Then all we need to do is create razorpay instances, attach event listeners, some handles and boom. A payment system is also integrated in our Flutter app. 
+[Link to the package](https://pub.dev/packages/razorpay_flutter)
+
+
+**5. D3.js library/syncfusion_flutter_charts package/google gallery for charts/plotly_js package**(For detailed reports)
+These are some libraries and packages that we can use in our project to showcase detailed reports and statistics of our students and their engagement in the courses, monthly performance, etc.
+D3.js is one of the most famous library for plotting beautiful charts, graphs and statistical reports. We can easily use it in our flutter app by creating a js file which contains all the code required for plotting the graphs and then using this line of code.
+
+```
+import 'dart:js' as js;
+
+js.context['d3'].callMethod('select', [shadowRoot.querySelector('.chart')]);
+```
+This will invoke the d3 code after some tweaks in our widget's code and finally displaying beautiful graphs for our student's monthly performance. 
+
+
+**6. Google Cloud/AWS libraries**(For database storage and cloud computing)
+We need either of these two serices to manage the database of our students, when they are in a very large amount. These two services are very easy to use and with the services they provide, we can do everything that we want for our database. These are some of the code snippets that might come handy while integrating AWS with flutter(after we have set up an AWS account and created a database in it).
+
+For creating a serverless project
+```
+serverless create --template aws-nodejs
+```
+
+```
+functions:
+
+  getAllFiles:
+    handler: handler.getAllFiles
+    events:
+     - http:
+         path: /getAllFiles
+         method: get       
+
+  uploadFile:
+    handler: handler.uploadFile
+    events:
+     - http:
+         path: /uploadFile
+         method: post
+```
+Logic for getting all Files, from AWS storage:
+
+```
+module.exports.getAllFiles = async (event, context) => {
+
+  let files = [];
+
+  let params = {
+    Bucket: process.env.BUCKET, /* required */
+    Prefix: 'upload'
+  };
+
+  let result = await s3.listObjectsV2(params).promise();
+
+  let data = result.Contents;
+  Object.keys(data).forEach((key, index) => {
+
+    let fileObject = data[key];
+
+    files.push(`https://${result.Name}.s3.us-east-2.amazonaws.com/${fileObject.Key}`);
+  });
+
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      files: files,
+      bucketName: `${result.Name}`,
+      subFolder: `${result.Prefix}`,
+    }, null, 2),
+  };
+};
+```
+Logic for uploading files to bucket:
+
+```
+module.exports.uploadFile = async (event, context) => {
+
+  let request = event.body;
+  let jsonData = JSON.parse(request);
+  let base64String = jsonData.base64String;
+  let buffer = Buffer.from(base64String, 'base64');
+  let fileMime = fileType(buffer);
+
+  if (fileMime == null) {
+    return context.fail('The string supplied is not a file type.');
+  }
+
+  let file = getFile(fileMime, buffer); 
+//Extract file info in getFile
+```
+
+```
+ let params = file.params;
+
+  let result = await s3.putObject(params).promise();
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({
+      url: `${file.uploadFile.full_path}`,
+    }, null, 2),
+  };
+};
+```
+
+
+### Implementation of this tech stack in a Learning Management System?
+If you have reached till here, then my friend, you have learned about most of the tech stacks that are required for building a user friendly Learning Management System Application. The implementation flow of these technologies and frameworks will be as follows:
+
+**1. UI development via flutter**
+**2. Integrating Django framework and the AWS framework with the App**
+**3. Adding services such as Jitsi Meet, Whiteboard, Razorpay, D3 libraries**
+**4. Testing of the app**
+
+
+
+
+
+
+
 
 
 
