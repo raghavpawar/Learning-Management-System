@@ -288,10 +288,14 @@ module.exports.uploadFile = async (event, context) => {
 ### Implementation of this tech stack in a Learning Management System?
 If you have reached till here, then my friend, you have learned about most of the tech stacks that are required for building a user friendly Learning Management System Application. The implementation flow of these technologies and frameworks will be as follows:
 
-**1. UI development via flutter**
-**2. Integrating Django framework and the AWS framework with the App**
-**3. Adding services such as Jitsi Meet, Whiteboard, Razorpay, D3 libraries**
-**4. Testing of the app**
+1. UI development via flutter
+2. Integrating Django framework and the AWS framework with the App
+3. Adding services such as Jitsi Meet, Whiteboard, Razorpay, D3 libraries
+4. Testing of the app along with development.
+
+
+
+##### Thank You!
 
 
 
