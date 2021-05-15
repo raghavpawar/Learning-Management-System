@@ -81,7 +81,7 @@ Then we will create a model, which will basically translate to a SQL database be
 ```python
 from django.db import models
 
-class Cayegory(models.Model):
+class Category(models.Model):
   name = models.CharField(max_length=50)
   
   def __str__(self):
